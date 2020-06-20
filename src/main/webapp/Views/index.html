@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
+
+    <title>Cinema Service</title>
+    <script>
+            $(document).ready($.ajax({
+                type: 'GET',
+                url: 'http://localhost:8080/cnm/update',
+                dataType: 'json'
+            }).done(function(data) {
+                for (let i = 0; i < 3; i++){
+                    for (let y = 0;y < 3; y++){
+                        if(data[i][y]===0) {
+                            var b = document.getElementById("place"+i+''+y);
+                            b.setAttribute("disabled", "disabled");
+                            console.log(data);
+                        }
+                    }
+                }
+            }).fail(function(err){
+                console.log(err);
+            }));
+    </script>
+    <script>
+        var form = document.getElementById("formT");
+        $("#btn1").onclick = (function() {
+            //form.action = "update";
+            console.log("btn1 initilaze")
+        });
+
+        $("#btn2").onclick = (function() {
+            //form.action = "update";
+            console.log("btn2 initilaze")
+        })
+    </script>
+    <script>
+        function btn1() {
+            var form = document.getElementById("formT");
+            form.action = "update"
+            console.log("btn1 initilaze")
+        }
+    </script>
+</head>
+<body vlink="#FF9428" >
+
+<form id="formT"  method="post">
+
+<div class="container">
+    <div class="row pt-3">
+        <h4>
+            Бронирование месте на сеанс
+        </h4>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th style="width: 120px;">Ряд / Место</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>1</th>
+                <td><input id="place00"type="radio" name="place" value="11" > Ряд 1, Место 1</td>
+                <td><input id="place01"type="radio" name="place" value="12" > Ряд 1, Место 2</td>
+                <td><input id="place02"type="radio" name="place" value="13" > Ряд 1, Место 3</td>
+            </tr>
+            <tr>
+                <th>2</th>
+                <td><input id="place10" type="radio" name="place" value="21"> Ряд 2, Место 1</td>
+                <td><input id="place11" type="radio" name="place" value="22"> Ряд 2, Место 2</td>
+                <td><input id="place12" type="radio" name="place" value="23"> Ряд 2, Место 3</td>
+            </tr>
+            <tr>
+                <th>3</th>
+                <td><input id="place20" type="radio" name="place" value="31"> Ряд 3, Место 1</td>
+                <td><input id="place21"type="radio" name="place" value="32"> Ряд 3, Место 2</td>
+                <td><input id="place22" type="radio" name="place" value="33"> Ряд 3, Место 3</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <button id="btn1" type="submit" onclick="btn1()" class="btn btn-default" >Оплатить</button>
+</div>
+</form>
+<br>
+<form action="Logout" method="post">
+    <button id="btn2" type="submit" class="btn btn-primary" >Logout</button>
+</form>
+</body>
+</html>
