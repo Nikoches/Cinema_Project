@@ -1,0 +1,7 @@
+<Resource name="jdbc/cinema" auth="Container"
+          type="javax.sql.DataSource" maxActive="100"
+          maxIdle="30" maxWait="10000"
+          username="postgres"
+          password="password"
+          driverClassName="jdbc.driver.name"
+          url="jdbc:postgresql://127.0.0.1:5432/cinema"/>

@@ -3,15 +3,12 @@ package Persistence;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.Properties;
 
 public class DbConnect {
     private static final BasicDataSource SOURCE = new BasicDataSource();
     private static final DbConnect INSTANCE = new DbConnect();
-    private Connection connection;
 
     private DbConnect() {
         this.setConnection();
@@ -29,13 +26,24 @@ public class DbConnect {
             SOURCE.setUrl(config.getProperty("connection.url"));
             SOURCE.setUsername(config.getProperty("connection.username"));
             SOURCE.setPassword(config.getProperty("connection.password"));
-            connection = SOURCE.getConnection();
+            SOURCE.setMinIdle(5);
+            SOURCE.setMaxIdle(10);
+            SOURCE.setMaxOpenPreparedStatements(100);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+    public Connection getConnection() {
+        Connection connection = null;
+        try {
+            connection = SOURCE.getConnection();
+        }catch (SQLException ex){
+            ex.getMessage();
+        };
+        return connection;
+    }
     public int[][] getPlaces() {
+        Connection connection = getConnection();
         String sqlc = "select * from place;";
         int[][] array = new int[3][3];
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc); ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -53,6 +61,7 @@ public class DbConnect {
         return array;
     }
     public boolean isAuthorized(String name, String pwd) {
+        Connection connection = getConnection();
         String sqlc = "select * from users where name = ?;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc)) {
                 preparedStatement.setString(1, name);
@@ -66,5 +75,35 @@ public class DbConnect {
             System.out.println("Error");
         }
         return false;
+    }
+
+    public boolean setPlace(int[] place,int id,int sum) {
+        Connection connection = getConnection();
+        String row = "row" + place[0];
+        String update = "update orders_c set " + row + " = true where line = ?;";
+        String insert = "insert into orders_cin(place_n, sum, user_id) VALUES (?,?,?)";
+        Savepoint savepointOne = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(update);PreparedStatement preparedStatement1 = connection.prepareStatement(insert)) {
+            savepointOne = connection.setSavepoint("SavepointOne");
+            connection.setAutoCommit(false);
+            Array array = connection.createArrayOf("int", new int[][]{place});
+            preparedStatement.setInt(0, place[1]);
+            preparedStatement1.setArray(0,array);
+            preparedStatement1.setInt(1,sum);
+            preparedStatement1.setInt(2,id);
+            preparedStatement.execute();
+            preparedStatement1.execute();
+            connection.commit();
+        } catch (Exception x) {
+            x.printStackTrace();
+            try {
+                connection.rollback(savepointOne);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Error");
+            return false;
+        }
+        return true;
     }
 }

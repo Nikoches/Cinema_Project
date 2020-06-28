@@ -10,6 +10,7 @@
 
     <title>Cinema Service</title>
     <script>
+    function f(){
             $(document).ready($.ajax({
                 type: 'GET',
                 url: 'http://localhost:8080/cnm/update',
@@ -26,26 +27,11 @@
                 }
             }).fail(function(err){
                 console.log(err);
-            }));
+            }));}
     </script>
     <script>
-        var form = document.getElementById("formT");
-        $("#btn1").onclick = (function() {
-            //form.action = "update";
-            console.log("btn1 initilaze")
-        });
-
-        $("#btn2").onclick = (function() {
-            //form.action = "update";
-            console.log("btn2 initilaze")
-        })
-    </script>
-    <script>
-        function btn1() {
-            var form = document.getElementById("formT");
-            form.action = "update"
-            console.log("btn1 initilaze")
-        }
+        $(document).ready(
+        setInterval(f, 2000));
     </script>
 </head>
 <body vlink="#FF9428" >
@@ -88,7 +74,7 @@
             </tbody>
         </table>
     </div>
-    <button id="btn1" type="submit" onclick="btn1()" class="btn btn-default" >Оплатить</button>
+    <button id="btn1" type="submit" class="btn btn-default" >Оплатить</button>
 </div>
 </form>
 <br>
