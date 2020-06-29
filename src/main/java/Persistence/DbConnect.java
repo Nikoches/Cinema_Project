@@ -33,17 +33,14 @@ public class DbConnect {
             e.printStackTrace();
         }
     }
-    public Connection getConnection() {
+
+    public int[][] getPlaces() {
         Connection connection = null;
         try {
             connection = SOURCE.getConnection();
         }catch (SQLException ex){
             ex.getMessage();
         };
-        return connection;
-    }
-    public int[][] getPlaces() {
-        Connection connection = getConnection();
         String sqlc = "select * from place;";
         int[][] array = new int[3][3];
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc); ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -61,7 +58,12 @@ public class DbConnect {
         return array;
     }
     public boolean isAuthorized(String name, String pwd) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        try {
+            connection = SOURCE.getConnection();
+        }catch (SQLException ex){
+            ex.getMessage();
+        };
         String sqlc = "select * from users where name = ?;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc)) {
                 preparedStatement.setString(1, name);
@@ -78,7 +80,12 @@ public class DbConnect {
     }
 
     public boolean setPlace(int[] place,int id,int sum) {
-        Connection connection = getConnection();
+        Connection connection = null;
+        try {
+            connection = SOURCE.getConnection();
+        }catch (SQLException ex){
+            ex.getMessage();
+        };
         String row = "row" + place[0];
         String update = "update orders_c set " + row + " = true where line = ?;";
         String insert = "insert into orders_cin(place_n, sum, user_id) VALUES (?,?,?)";
