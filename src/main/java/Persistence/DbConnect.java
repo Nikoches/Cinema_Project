@@ -46,9 +46,9 @@ public class DbConnect {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc); ResultSet resultSet = preparedStatement.executeQuery()) {
             int x = 0;
             while (resultSet.next()) {
-                array[x][0] = resultSet.getBoolean(1) == true ? 1 : 0;
-                array[x][1] = resultSet.getBoolean(2) == true ? 1 : 0;
-                array[x][2] = resultSet.getBoolean(3) == true ? 1 : 0;
+                array[x][0] = resultSet.getBoolean(1) ? 1 : 0;
+                array[x][1] = resultSet.getBoolean(2) ? 1 : 0;
+                array[x][2] = resultSet.getBoolean(3) ? 1 : 0;
                 x++;
             }
         } catch (Exception x) {
@@ -58,20 +58,11 @@ public class DbConnect {
         return array;
     }
     public boolean isAuthorized(String name, String pwd) {
-        Connection connection = null;
-        try {
-            connection = SOURCE.getConnection();
-        }catch (SQLException ex){
-            ex.getMessage();
-        };
         String sqlc = "select * from users where name = ?;";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc)) {
+        try (Connection connection = SOURCE.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(sqlc)) {
                 preparedStatement.setString(1, name);
                 ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next() && resultSet.getString(3).equals(pwd)) {
-                    return true;
-                }
-                return false;
+            return resultSet.next() && resultSet.getString(3).equals(pwd);
         } catch (Exception x) {
             x.printStackTrace();
             System.out.println("Error");
@@ -80,17 +71,12 @@ public class DbConnect {
     }
 
     public boolean setPlace(int[] place,int id,int sum) {
-        Connection connection = null;
-        try {
-            connection = SOURCE.getConnection();
-        }catch (SQLException ex){
-            ex.getMessage();
-        };
         String row = "row" + place[0];
         String update = "update orders_c set " + row + " = true where line = ?;";
         String insert = "insert into orders_cin(place_n, sum, user_id) VALUES (?,?,?)";
         Savepoint savepointOne = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(update);PreparedStatement preparedStatement1 = connection.prepareStatement(insert)) {
+        try (Connection connection = SOURCE.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(update);
+             PreparedStatement preparedStatement1 = connection.prepareStatement(insert)) {
             savepointOne = connection.setSavepoint("SavepointOne");
             connection.setAutoCommit(false);
             Array array = connection.createArrayOf("int", new int[][]{place});
@@ -103,7 +89,7 @@ public class DbConnect {
             connection.commit();
         } catch (Exception x) {
             x.printStackTrace();
-            try {
+            try(Connection connection = SOURCE.getConnection()) {
                 connection.rollback(savepointOne);
             } catch (SQLException e) {
                 e.printStackTrace();
