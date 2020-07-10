@@ -35,15 +35,9 @@ public class DbConnect {
     }
 
     public int[][] getPlaces() {
-        Connection connection = null;
-        try {
-            connection = SOURCE.getConnection();
-        }catch (SQLException ex){
-            ex.getMessage();
-        };
         String sqlc = "select * from place;";
         int[][] array = new int[3][3];
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlc); ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (Connection connection = SOURCE.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(sqlc); ResultSet resultSet = preparedStatement.executeQuery()) {
             int x = 0;
             while (resultSet.next()) {
                 array[x][0] = resultSet.getBoolean(1) ? 1 : 0;

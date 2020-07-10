@@ -26,7 +26,6 @@ public class CinService {
         return jsArray2.toJSONString();
     }
     public boolean makeTransaction(int[] ar,int id,int sum) {
-        dbConnect.setPlace(ar, id, sum);
-        return false;
+      return   dbConnect.setPlace(ar, id, sum);
     }
 }
